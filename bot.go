@@ -296,23 +296,33 @@ func helpHandler(message UpdateResultMessageT) {
 }
 
 func meetHandler(message UpdateResultMessageT) {
-	res := read("БД!A1:E10")
-	flag := 0
-	for i := 1; i < len(res); i++ {
-		if res[i].([]interface{})[2] == message.From.Username {
-			log.Println("Found in database")
-			flag = i
+	if message.From.Username != "" {
+		res := read("БД!A1:E10")
+		flag := 0
+		for i := 1; i < len(res); i++ {
+			if res[i].([]interface{})[2] == message.From.Username {
+				log.Println("Found in database")
+				flag = i
+			}
 		}
-	}
-	if flag != 0 {
-		write(ToGenericArray("Ожидаю встречу"), "БД!E"+strconv.Itoa(flag+1))
-		_, err := sendMessage(message.Chat.Id, "Данные обновлены")
-		if err != nil {
-			log.Println(err.Error())
+		if flag != 0 {
+			write(ToGenericArray("Ожидаю встречу"), "БД!E"+strconv.Itoa(flag+1))
+			_, err := sendMessage(message.Chat.Id, "Данные обновлены")
+			if err != nil {
+				log.Println(err.Error())
+			}
+		} else {
+			write(ToGenericArray(message.From.FirstName, message.From.LastName, message.From.Username, message.From.Id, "Ожидаю встречу"), "БД!A"+strconv.Itoa(len(res)+1))
+			_, err := sendMessage(message.Chat.Id, "Данные добавлены")
+			if err != nil {
+				log.Println(err.Error())
+			}
 		}
 	} else {
-		write(ToGenericArray(message.From.FirstName, message.From.LastName, message.From.Username, message.From.Id, "Ожидаю встречу"), "БД!A"+strconv.Itoa(len(res)+1))
-		_, err := sendMessage(message.Chat.Id, "Данные добавлены")
+		_, err := sendMessage(message.Chat.Id, "У твоего аккаунта Telegram не задано имя пользователя без него "+
+			"другие пользователи не смогут с тобой связаться. Пожалуйста открой настройки и нажми на свою "+
+			"фотографию, после этого откроется окно в котором можно задать своё имя пользователя. Как сделаешь "+
+			"возвращайся и мы попробуем снова!")
 		if err != nil {
 			log.Println(err.Error())
 		}
