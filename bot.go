@@ -259,16 +259,13 @@ func read(readRange string) (result []interface{}) {
 	if err != nil {
 		log.Fatalf("Unable to retrieve data from sheet: %v", err)
 	}
-	//var result [3]interface{}
+
 	if len(resp.Values) == 0 {
 		fmt.Println("No data found.")
 	} else {
 		for _, row := range resp.Values {
 			// Print columns A and E, which correspond to indices 0 and 4.
-			//fmt.Printf("%d %s \n", col, row)
 			result = append(result, row)
-			//fmt.Print(result[1])
-
 		}
 	}
 	return result
@@ -392,6 +389,71 @@ func defaultMainHandler(message UpdateResultMessageT) {
 	}
 }
 
+func callAt(hour, min, sec int, f func()) error {
+	loc, err := time.LoadLocation("Russia/Moscow")
+	if err != nil {
+		return err
+	}
+
+	// Вычисляем время первого запуска.
+	now := time.Now().Local()
+	firstCallTime := time.Date(
+		now.Year(), now.Month(), now.Day(), hour, min, sec, 0, loc)
+	if firstCallTime.Before(now) {
+		// Если получилось время раньше текущего, прибавляем сутки.
+		firstCallTime = firstCallTime.Add(time.Hour * 24)
+	}
+
+	// Вычисляем временной промежуток до запуска.
+	duration := firstCallTime.Sub(time.Now().Local())
+	go func() {
+		time.Sleep(duration)
+		for {
+			f()
+			// Следующий запуск через неделю.
+			time.Sleep(time.Hour * 24 * 7)
+		}
+	}()
+
+	return nil
+}
+
+func remove(s []interface{}, i int) []interface{} {
+	s[i] = s[len(s)-1]
+	// We do not need to put s[i] at the end, as it will be discarded anyway
+	return s[:len(s)-1]
+}
+
+func myfunc() {
+	res := read("БД!A1:E10")
+	for i := 1; i < len(res); i++ {
+		if res[i].([]interface{})[4] == "Не хочу встречаться" {
+			remove(res, i)
+			log.Println("Delete person")
+		}
+	}
+}
+
+func randomCreate(number_of_persons int) []int {
+	sec1 := rand.New(rand.NewSource(1))
+	var person []int
+	person[0] = sec1.Int()
+	for i := 0; len(person) < number_of_persons; i++ {
+		rnd1 := sec1.Int()
+		if intInSlice(rnd1, person) == false {
+			person = append(person, rnd1)
+		}
+	}
+	return person
+}
+func intInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
 func main() {
 	//Идея вынимать из мапы функции и по единому интерфейсу взаимодествовать
 	// с обработчиками
@@ -406,13 +468,18 @@ func main() {
 
 	//Необходим для получения обновлений.
 	offset := 0
+	//Вызов функции создания встреч
+	err := callAt(10, 0, 0, myfunc)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+	}
+
+	// Эмуляция дальнейшей работы программы.
+	//time.Sleep(time.Hour * 24 * 7)
 
 	for {
 		//Спим определнное количество секунд
 		time.Sleep(1000000000 * refreshRate)
-
-		//Запускаем удаление пустых комнат
-		//cleanRooms(&allRooms)
 
 		//Получаем список обновлений
 		update, err := getUpdates(offset)
