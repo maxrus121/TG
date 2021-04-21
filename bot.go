@@ -432,6 +432,19 @@ func myfunc() {
 			log.Println("Delete person")
 		}
 	}
+	ram := read("Встречи!A1:C10")
+	person := randomCreate(len(res))
+	for i := 0; i < len(person); i++ {
+		if i%2 == 0 { //Проверить правильность расчета строки
+			write(ToGenericArray(res[person[i]].([]interface{})[2]), "Встречи!A"+strconv.Itoa(len(ram)+1+i/2))
+		} else {
+			write(ToGenericArray(res[person[i]].([]interface{})[2]), "Встречи!B"+strconv.Itoa(len(ram)+1+i/2))
+		}
+	}
+	ram = read("Встречи!A1:C10")
+	for i := 0; i < len(ram); i++ {
+
+	}
 }
 
 func randomCreate(number_of_persons int) []int {
