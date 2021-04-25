@@ -303,7 +303,7 @@ func meetHandler(message UpdateResultMessageT) {
 			}
 		}
 		if flag != 0 {
-			write(ToGenericArray("Ожидаю встречу"), "БД!E"+strconv.Itoa(flag+1))
+			write(ToGenericArray("Ожидаю встречу"), "БД!F"+strconv.Itoa(flag+1))
 			_, err := sendMessage(message.Chat.Id, "Данные обновлены")
 			if err != nil {
 				log.Println(err.Error())
@@ -423,8 +423,17 @@ func remove(s []interface{}, i int) []interface{} {
 	// We do not need to put s[i] at the end, as it will be discarded anyway
 	return s[:len(s)-1]
 }
+func meetingToArchive() {
+	res := read("Встречи!A1:G10")
+	ram := read("Архив встреч!A1:D20")
+	for i := 1; i < len(res); i++ {
+		write(ToGenericArray(res[i].([]interface{})[0], res[i].([]interface{})[1], res[i].([]interface{})[2], res[i].([]interface{})[3], res[i].([]interface{})[4], res[i].([]interface{})[5], res[i].([]interface{})[6]), "Архив встреч!A"+strconv.Itoa(len(ram)+i))
+		write(ToGenericArray("", "", "", "", "", "", ""), "Встречи!A"+strconv.Itoa(i+1))
+	}
+}
 
-func myfunc() {
+func generateMeeting(message UpdateResultMessageT) {
+	meetingToArchive()
 	res := read("БД!A1:E10")
 	for i := 1; i < len(res); i++ {
 		if res[i].([]interface{})[4] == "Не хочу встречаться" {
@@ -432,27 +441,36 @@ func myfunc() {
 			log.Println("Delete person")
 		}
 	}
-	ram := read("Встречи!A1:C10")
-	person := randomCreate(len(res))
+	ram := read("Встречи!A1:D10")
+	person := randomCreate(len(res) - 1)
 	for i := 0; i < len(person); i++ {
 		if i%2 == 0 { //Проверить правильность расчета строки
-			write(ToGenericArray(res[person[i]].([]interface{})[2]), "Встречи!A"+strconv.Itoa(len(ram)+1+i/2))
+			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!A"+strconv.Itoa(len(ram)+1+i/2))
+			write(ToGenericArray(time.Now().Month(), time.Now().Day()), "Встречи!E"+strconv.Itoa(len(ram)+1+i/2))
 		} else {
-			write(ToGenericArray(res[person[i]].([]interface{})[2]), "Встречи!B"+strconv.Itoa(len(ram)+1+i/2))
+			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!C"+strconv.Itoa(len(ram)+1+i/2))
 		}
 	}
-	ram = read("Встречи!A1:C10")
-	for i := 0; i < len(ram); i++ {
-
+	ram = read("Встречи!A1:D10")
+	for i := 1; i < len(ram); i++ {
+		chatId, _ := strconv.Atoi(ram[i].([]interface{})[1].(string))
+		_, err := sendMessage(chatId, "@"+ram[i].([]interface{})[2].(string))
+		if err != nil {
+			log.Println(err.Error())
+		}
+		chatId, _ = strconv.Atoi(ram[i].([]interface{})[3].(string))
+		_, err = sendMessage(chatId, "@"+ram[i].([]interface{})[0].(string))
+		if err != nil {
+			log.Println(err.Error())
+		}
 	}
 }
 
 func randomCreate(number_of_persons int) []int {
-	sec1 := rand.New(rand.NewSource(1))
 	var person []int
-	person[0] = sec1.Int()
+	person = append(person, rand.Intn(number_of_persons)+1)
 	for i := 0; len(person) < number_of_persons; i++ {
-		rnd1 := sec1.Int()
+		rnd1 := rand.Intn(number_of_persons) + 1
 		if intInSlice(rnd1, person) == false {
 			person = append(person, rnd1)
 		}
@@ -476,16 +494,17 @@ func main() {
 		"/want_a_meeting":     meetHandler,
 		"/quit":               quitHandler,
 		"/status":             statusHandler,
+		"/gen":                generateMeeting,
 		defaultHandlerMessage: defaultMainHandler,
 	}
 
 	//Необходим для получения обновлений.
 	offset := 0
 	//Вызов функции создания встреч
-	err := callAt(10, 0, 0, myfunc)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-	}
+	//err := callAt(10, 0, 0, myfunc)
+	//if err != nil {
+	//	fmt.Printf("error: %v\n", err)
+	//}
 
 	// Эмуляция дальнейшей работы программы.
 	//time.Sleep(time.Hour * 24 * 7)
