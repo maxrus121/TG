@@ -36,9 +36,11 @@ const (
 Я передал просто *map[int]Room, но как оказалось ссылка на мапу
 передалась, а вот значения внутри нет(точнее их копия)
 */
+
 type MainMessageHandler func(UpdateResultMessageT)
 
 //Описываем структуры Telegram
+
 type UpdateT struct {
 	Ok     bool            `json:"ok"`
 	Result []UpdateResultT `json:"result"`
@@ -389,8 +391,8 @@ func defaultMainHandler(message UpdateResultMessageT) {
 	}
 }
 
-func callAt(hour, min, sec int, f func()) error {
-	loc, err := time.LoadLocation("Russia/Moscow")
+func callAt(hour, min, sec int) error {
+	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		return err
 	}
@@ -409,9 +411,13 @@ func callAt(hour, min, sec int, f func()) error {
 	go func() {
 		time.Sleep(duration)
 		for {
-			f()
-			// Следующий запуск через неделю.
-			time.Sleep(time.Hour * 24 * 7)
+			if time.Now().Weekday() == time.Monday {
+				generateMeeting()
+			} else if time.Now().Weekday() == time.Friday {
+				//giveFeedback()
+			}
+			// Следующий запуск через сутки.
+			time.Sleep(time.Hour * 24)
 		}
 	}()
 
@@ -427,12 +433,18 @@ func meetingToArchive() {
 	res := read("Встречи!A1:G10")
 	ram := read("Архив встреч!A1:D20")
 	for i := 1; i < len(res); i++ {
-		write(ToGenericArray(res[i].([]interface{})[0], res[i].([]interface{})[1], res[i].([]interface{})[2], res[i].([]interface{})[3], res[i].([]interface{})[4], res[i].([]interface{})[5], res[i].([]interface{})[6]), "Архив встреч!A"+strconv.Itoa(len(ram)+i))
-		write(ToGenericArray("", "", "", "", "", "", ""), "Встречи!A"+strconv.Itoa(i+1))
+		if len(res[i].([]interface{})) == 7 {
+			write(ToGenericArray(res[i].([]interface{})[0], res[i].([]interface{})[2], res[i].([]interface{})[4], res[i].([]interface{})[5], res[i].([]interface{})[6]), "Архив встреч!A"+strconv.Itoa(len(ram)+i))
+			write(ToGenericArray("", "", "", "", "", "", ""), "Встречи!A"+strconv.Itoa(i+1))
+		} else {
+			res[i] = append(res[i].([]interface{}), "Нет информации", "Нет информации", "Нет информации")
+			write(ToGenericArray(res[i].([]interface{})[0], res[i].([]interface{})[2], res[i].([]interface{})[4], res[i].([]interface{})[5], res[i].([]interface{})[6]), "Архив встреч!A"+strconv.Itoa(len(ram)+i))
+			write(ToGenericArray("", "", "", "", "", "", ""), "Встречи!A"+strconv.Itoa(i+1))
+		}
 	}
 }
 
-func generateMeeting(message UpdateResultMessageT) {
+func generateMeeting() {
 	meetingToArchive()
 	res := read("БД!A1:E10")
 	for i := 1; i < len(res); i++ {
@@ -446,7 +458,9 @@ func generateMeeting(message UpdateResultMessageT) {
 	for i := 0; i < len(person); i++ {
 		if i%2 == 0 { //Проверить правильность расчета строки
 			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!A"+strconv.Itoa(len(ram)+1+i/2))
-			write(ToGenericArray(time.Now().Month(), time.Now().Day()), "Встречи!E"+strconv.Itoa(len(ram)+1+i/2))
+			date1 := time.Now().Month()
+			date2 := time.Now().Day()
+			write(ToGenericArray(strconv.Itoa(date2)+"."+strconv.Itoa(int(date1))), "Встречи!E"+strconv.Itoa(len(ram)+1+i/2))
 		} else {
 			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!C"+strconv.Itoa(len(ram)+1+i/2))
 		}
@@ -454,23 +468,23 @@ func generateMeeting(message UpdateResultMessageT) {
 	ram = read("Встречи!A1:D10")
 	for i := 1; i < len(ram); i++ {
 		chatId, _ := strconv.Atoi(ram[i].([]interface{})[1].(string))
-		_, err := sendMessage(chatId, "@"+ram[i].([]interface{})[2].(string))
+		_, err := sendMessage(chatId, "Привет! На этой неделе твой партнер @"+ram[i].([]interface{})[2].(string))
 		if err != nil {
 			log.Println(err.Error())
 		}
 		chatId, _ = strconv.Atoi(ram[i].([]interface{})[3].(string))
-		_, err = sendMessage(chatId, "@"+ram[i].([]interface{})[0].(string))
+		_, err = sendMessage(chatId, "Привет! на этой неделе твой партнер @"+ram[i].([]interface{})[0].(string))
 		if err != nil {
 			log.Println(err.Error())
 		}
 	}
 }
 
-func randomCreate(number_of_persons int) []int {
+func randomCreate(numberOfPersons int) []int {
 	var person []int
-	person = append(person, rand.Intn(number_of_persons)+1)
-	for i := 0; len(person) < number_of_persons; i++ {
-		rnd1 := rand.Intn(number_of_persons) + 1
+	person = append(person, rand.Intn(numberOfPersons)+1)
+	for i := 0; len(person) < numberOfPersons; i++ {
+		rnd1 := rand.Intn(numberOfPersons) + 1
 		if intInSlice(rnd1, person) == false {
 			person = append(person, rnd1)
 		}
@@ -489,25 +503,24 @@ func main() {
 	//Идея вынимать из мапы функции и по единому интерфейсу взаимодествовать
 	// с обработчиками
 	mainDispatcher := map[string]MainMessageHandler{
-		"/start":              startHandler,
-		"/help":               helpHandler,
-		"/want_a_meeting":     meetHandler,
-		"/quit":               quitHandler,
-		"/status":             statusHandler,
-		"/gen":                generateMeeting,
+		"/start":          startHandler,
+		"/help":           helpHandler,
+		"/want_a_meeting": meetHandler,
+		"/quit":           quitHandler,
+		"/status":         statusHandler,
+		//"/gen":                generateMeeting,
 		defaultHandlerMessage: defaultMainHandler,
 	}
 
 	//Необходим для получения обновлений.
 	offset := 0
 	//Вызов функции создания встреч
-	//err := callAt(10, 0, 0, myfunc)
+	//err := callAt(10, 0, 0)
 	//if err != nil {
-	//	fmt.Printf("error: %v\n", err)
+	//	log.Println("error in calling function", + err.Error())
 	//}
 
 	// Эмуляция дальнейшей работы программы.
-	//time.Sleep(time.Hour * 24 * 7)
 
 	for {
 		//Спим определнное количество секунд
