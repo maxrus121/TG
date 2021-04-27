@@ -380,14 +380,34 @@ func init() {
 }
 
 func defaultMainHandler(message UpdateResultMessageT) {
+	result := read("Встречи!A1:G10")
+	flag := 0
+	for i := 1; i < len(result); i++ {
+		if message.From.Username == result[i].([]interface{})[0] {
+			write(ToGenericArray(result[i].([]interface{})[5].(string)+message.Text), "Встречи!F"+strconv.Itoa(i+1))
+			flag = 1
+			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
+			if err != nil {
+				log.Println(err.Error())
+			}
+		} else if message.From.Username == result[i].([]interface{})[2] {
+			write(ToGenericArray(result[i].([]interface{})[6].(string)+message.Text), "Встречи!G"+strconv.Itoa(i+1))
+			flag = 1
+			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
+			if err != nil {
+				log.Println(err.Error())
+			}
+		}
+	}
 	randomMessages := []string{
-		"Я даже и не знаю что сказать",
-		"Если ты Ник то кыш",
+		"Я даже и не знаю, что сказать(",
 		"Возможно я не понял твою команду",
 	}
-	_, err := sendMessage(message.Chat.Id, randomMessages[rand.Intn(len(randomMessages))])
-	if err != nil {
-		log.Println(err.Error())
+	if flag == 0 {
+		_, err := sendMessage(message.Chat.Id, randomMessages[rand.Intn(len(randomMessages))])
+		if err != nil {
+			log.Println(err.Error())
+		}
 	}
 }
 
@@ -413,8 +433,8 @@ func callAt(hour, min, sec int) error {
 		for {
 			if time.Now().Weekday() == time.Monday {
 				generateMeeting()
-			} else if time.Now().Weekday() == time.Friday {
-				//giveFeedback()
+			} else if time.Now().Weekday() == time.Tuesday {
+				giveFeedback()
 			}
 			// Следующий запуск через сутки.
 			time.Sleep(time.Hour * 24)
@@ -429,6 +449,23 @@ func remove(s []interface{}, i int) []interface{} {
 	// We do not need to put s[i] at the end, as it will be discarded anyway
 	return s[:len(s)-1]
 }
+
+func giveFeedback() {
+	res := read("Встречи!A1:G10")
+	for i := 1; i < len(res); i++ {
+		chatId, _ := strconv.Atoi(res[i].([]interface{})[1].(string))
+		_, err := sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!")
+		if err != nil {
+			log.Println(err.Error())
+		}
+		chatId, _ = strconv.Atoi(res[i].([]interface{})[3].(string))
+		_, err = sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!")
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
+}
+
 func meetingToArchive() {
 	res := read("Встречи!A1:G10")
 	ram := read("Архив встреч!A1:D20")
@@ -515,10 +552,10 @@ func main() {
 	//Необходим для получения обновлений.
 	offset := 0
 	//Вызов функции создания встреч
-	//err := callAt(10, 0, 0)
-	//if err != nil {
-	//	log.Println("error in calling function", + err.Error())
-	//}
+	err := callAt(18, 17, 0)
+	if err != nil {
+		log.Println("error in calling function" + err.Error())
+	}
 
 	// Эмуляция дальнейшей работы программы.
 
