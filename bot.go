@@ -93,6 +93,7 @@ type FromResultMessageT struct {
 	Username  string `json:"username"`
 }
 
+//ФУНКЦИИ ДЛЯ ВЗАИМОДЕЙСТВИЯ С ТЕЛЕГРАММ
 func getUpdates(offset int) (UpdateT, error) {
 	//Метод получения обновлений с API с какого сообщения начать
 	method := getUpdatesUri
@@ -108,6 +109,7 @@ func getUpdates(offset int) (UpdateT, error) {
 	}
 	return update, nil
 }
+
 func sendMessage(chatId int, text string) (SendMessageResponseT, error) {
 	//Метод отправки сообщений пользователю
 	method := sendMessageUrl + "?chat_id=" + strconv.Itoa(chatId) + "&text=" + url.QueryEscape(text)
@@ -144,6 +146,7 @@ func sendRequest(method string) []byte {
 	return response
 }
 
+//ФУНКЦИИ ДЛЯ СОЕДИНЕНИЯ С ГУГЛ ТАБЛИЦАМИ
 // Retrieve a token, saves the token, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
 	// The file token.json stores the user's access and refresh tokens, and is
@@ -231,9 +234,6 @@ func write(Information []interface{}, writeRange string) {
 	}
 
 }
-func ToGenericArray(arr ...interface{}) []interface{} {
-	return arr
-}
 
 func read(readRange string) (result []interface{}) {
 	b, err := ioutil.ReadFile("credentials.json")
@@ -253,7 +253,6 @@ func read(readRange string) (result []interface{}) {
 		log.Fatalf("Unable to retrieve Sheets client: %v", err)
 	}
 
-	// Prints the names and majors of students in a sample spreadsheet:
 	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
 	//1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI
 	spreadsheetId := "1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI"
@@ -273,6 +272,35 @@ func read(readRange string) (result []interface{}) {
 	return result
 }
 
+//ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+
+func ToGenericArray(arr ...interface{}) []interface{} {
+	return arr
+}
+
+func init() {
+	//Инициируем наш логгер
+	log.SetPrefix("TeleBOT: ")
+	log.SetFlags(log.Ldate | log.Ltime)
+	log.Println("Start work bot")
+}
+
+func remove(s []interface{}, i int) []interface{} {
+	s[i] = s[len(s)-1]
+	// We do not need to put s[i] at the end, as it will be discarded anyway
+	return s[:len(s)-1]
+}
+
+func intInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+//ФУНКЦИИ ДЛЯ ОБРАБОТКИ КОМАНД В БОТЕ
 func startHandler(message UpdateResultMessageT) {
 	// Обработчик команды /start
 	userMessage := "Привет " + message.From.FirstName + "!\n" + "Набери сообщение /help для просмотра команд"
@@ -372,27 +400,31 @@ func statusHandler(message UpdateResultMessageT) {
 		}
 	}
 }
-func init() {
-	//Инициируем наш логгер
-	log.SetPrefix("TeleBOT: ")
-	log.SetFlags(log.Ldate | log.Ltime)
-	log.Println("Start work bot")
-}
 
 func defaultMainHandler(message UpdateResultMessageT) {
 	result := read("Встречи!A1:G10")
 	flag := 0
 	for i := 1; i < len(result); i++ {
 		if message.From.Username == result[i].([]interface{})[0] {
-			write(ToGenericArray(result[i].([]interface{})[5].(string)+message.Text), "Встречи!F"+strconv.Itoa(i+1))
-			flag = 1
+			if result[i].([]interface{})[5].(string) == "Ожидается" {
+				write(ToGenericArray(message.Text), "Встречи!F"+strconv.Itoa(i+1))
+				flag = 1
+			} else {
+				write(ToGenericArray(result[i].([]interface{})[5].(string)+message.Text), "Встречи!F"+strconv.Itoa(i+1))
+				flag = 1
+			}
 			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
 			if err != nil {
 				log.Println(err.Error())
 			}
 		} else if message.From.Username == result[i].([]interface{})[2] {
-			write(ToGenericArray(result[i].([]interface{})[6].(string)+message.Text), "Встречи!G"+strconv.Itoa(i+1))
-			flag = 1
+			if result[i].([]interface{})[6].(string) == "Ожидается" {
+				write(ToGenericArray(message.Text), "Встречи!G"+strconv.Itoa(i+1))
+				flag = 1
+			} else {
+				write(ToGenericArray(result[i].([]interface{})[6].(string)+message.Text), "Встречи!G"+strconv.Itoa(i+1))
+				flag = 1
+			}
 			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
 			if err != nil {
 				log.Println(err.Error())
@@ -411,6 +443,7 @@ func defaultMainHandler(message UpdateResultMessageT) {
 	}
 }
 
+//ВНУТРЕННИЕ ФУНКЦИИ БОТА НЕ ВЫЗЫВАЕМЫЕ НАПРЯМУЮ
 func callAt(hour, min, sec int) error {
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
@@ -431,9 +464,9 @@ func callAt(hour, min, sec int) error {
 	go func() {
 		time.Sleep(duration)
 		for {
-			if time.Now().Weekday() == time.Monday {
+			if time.Now().Weekday() == time.Saturday {
 				generateMeeting()
-			} else if time.Now().Weekday() == time.Tuesday {
+			} else if time.Now().Weekday() == time.Thursday {
 				giveFeedback()
 			}
 			// Следующий запуск через сутки.
@@ -442,12 +475,6 @@ func callAt(hour, min, sec int) error {
 	}()
 
 	return nil
-}
-
-func remove(s []interface{}, i int) []interface{} {
-	s[i] = s[len(s)-1]
-	// We do not need to put s[i] at the end, as it will be discarded anyway
-	return s[:len(s)-1]
 }
 
 func giveFeedback() {
@@ -497,7 +524,7 @@ func generateMeeting() {
 			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!A"+strconv.Itoa(len(ram)+1+i/2))
 			date1 := time.Now().Month()
 			date2 := time.Now().Day()
-			write(ToGenericArray(strconv.Itoa(date2)+"."+strconv.Itoa(int(date1))), "Встречи!E"+strconv.Itoa(len(ram)+1+i/2))
+			write(ToGenericArray(strconv.Itoa(date2)+"."+strconv.Itoa(int(date1)), "Ожидается", "Ожидается"), "Встречи!E"+strconv.Itoa(len(ram)+1+i/2))
 		} else {
 			write(ToGenericArray(res[person[i]].([]interface{})[2], res[person[i]].([]interface{})[3]), "Встречи!C"+strconv.Itoa(len(ram)+1+i/2))
 		}
@@ -528,31 +555,23 @@ func randomCreate(numberOfPersons int) []int {
 	}
 	return person
 }
-func intInSlice(a int, list []int) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
+
 func main() {
 	//Идея вынимать из мапы функции и по единому интерфейсу взаимодествовать
 	// с обработчиками
 	mainDispatcher := map[string]MainMessageHandler{
-		"/start":          startHandler,
-		"/help":           helpHandler,
-		"/want_a_meeting": meetHandler,
-		"/quit":           quitHandler,
-		"/status":         statusHandler,
-		//"/gen":                generateMeeting,
+		"/start":              startHandler,
+		"/help":               helpHandler,
+		"/want_a_meeting":     meetHandler,
+		"/quit":               quitHandler,
+		"/status":             statusHandler,
 		defaultHandlerMessage: defaultMainHandler,
 	}
 
 	//Необходим для получения обновлений.
 	offset := 0
 	//Вызов функции создания встреч
-	err := callAt(18, 17, 0)
+	err := callAt(21, 56, 0)
 	if err != nil {
 		log.Println("error in calling function" + err.Error())
 	}
