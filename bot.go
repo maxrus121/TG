@@ -4,6 +4,7 @@ package main
 Заготовка кода для бота
 */
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"golang.org/x/net/context"
@@ -14,7 +15,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -24,7 +24,7 @@ import (
 const (
 	refreshRate           = 3
 	baseTelegramUrl       = "https://api.telegram.org"
-	getUpdatesUri         = "getUpdates"
+	getUpdatesUrl         = "getUpdates"
 	sendMessageUrl        = "sendMessage"
 	telegramToken         = "1333858241:AAEVTFvfWxdC_sn6LUTuT50FePIezn5DCoM"
 	defaultHandlerMessage = "_default"
@@ -93,14 +93,32 @@ type FromResultMessageT struct {
 	Username  string `json:"username"`
 }
 
+type MessageSend struct {
+	ChatID   int                 `json:"chat_id"`
+	Text     string              `json:"text"`
+	Keyboard ReplyKeyboardMarkup `json:"reply_markup"`
+}
+type KeyboardButton struct {
+	Text            string `json:"text"`
+	RequestContact  bool   `json:"request_contact"`
+	RequestLocation bool   `json:"request_location"`
+}
+
+type ReplyKeyboardMarkup struct {
+	Keyboard        [][]KeyboardButton `json:"keyboard"`
+	ResizeKeyboard  bool               `json:"resize_keyboard"`   // optional
+	OneTimeKeyboard bool               `json:"one_time_keyboard"` // optional
+	Selective       bool               `json:"selective"`         // optional
+}
+
 //ФУНКЦИИ ДЛЯ ВЗАИМОДЕЙСТВИЯ С ТЕЛЕГРАММ
 func getUpdates(offset int) (UpdateT, error) {
 	//Метод получения обновлений с API с какого сообщения начать
-	method := getUpdatesUri
+	method := getUpdatesUrl
 	if offset != 0 {
 		method += "?offset=" + strconv.Itoa(offset)
 	}
-	response := sendRequest(method)
+	response := sendRequest(method, []byte{0})
 	update := UpdateT{}
 	err := json.Unmarshal(response, &update)
 
@@ -110,13 +128,22 @@ func getUpdates(offset int) (UpdateT, error) {
 	return update, nil
 }
 
-func sendMessage(chatId int, text string) (SendMessageResponseT, error) {
+func sendMessage(chatId int, text string, key ReplyKeyboardMarkup) (SendMessageResponseT, error) {
+	messageStruct := &MessageSend{
+		ChatID:   chatId,
+		Text:     text,
+		Keyboard: key,
+	}
+	jsonMessage, err := json.Marshal(messageStruct)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	//Метод отправки сообщений пользователю
-	method := sendMessageUrl + "?chat_id=" + strconv.Itoa(chatId) + "&text=" + url.QueryEscape(text)
-	response := sendRequest(method)
+	method := sendMessageUrl
+	response := sendRequest(method, jsonMessage)
 	sendMessage := SendMessageResponseT{}
 
-	err := json.Unmarshal(response, &sendMessage)
+	err = json.Unmarshal(response, &sendMessage)
 
 	if err != nil {
 		return sendMessage, err
@@ -124,11 +151,11 @@ func sendMessage(chatId int, text string) (SendMessageResponseT, error) {
 	return sendMessage, nil
 }
 
-func sendRequest(method string) []byte {
+func sendRequest(method string, jsonMessage []byte) []byte {
 	//Метод отправки http запроса
 	sendURL := baseTelegramUrl + "/bot" + telegramToken + "/" + method
 	response := make([]byte, 0)
-	resp, err := http.Get(sendURL)
+	resp, err := http.Post(sendURL, "application/json", bytes.NewBuffer(jsonMessage))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -300,11 +327,30 @@ func intInSlice(a int, list []int) bool {
 	return false
 }
 
+func NewReplyKeyboard(rows ...[]KeyboardButton) ReplyKeyboardMarkup {
+	var keyboard [][]KeyboardButton
+
+	keyboard = append(keyboard, rows...)
+
+	return ReplyKeyboardMarkup{
+		ResizeKeyboard: true,
+		Keyboard:       keyboard,
+	}
+}
+
+func NewKeyboardButtonRow(buttons ...KeyboardButton) []KeyboardButton {
+	var row []KeyboardButton
+
+	row = append(row, buttons...)
+
+	return row
+}
+
 //ФУНКЦИИ ДЛЯ ОБРАБОТКИ КОМАНД В БОТЕ
 func startHandler(message UpdateResultMessageT) {
 	// Обработчик команды /start
 	userMessage := "Привет " + message.From.FirstName + "!\n" + "Набери сообщение /help для просмотра команд"
-	_, err := sendMessage(message.Chat.Id, userMessage)
+	_, err := sendMessage(message.Chat.Id, userMessage, KeyBoard0())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -316,7 +362,7 @@ func helpHandler(message UpdateResultMessageT) {
 		"/want_a_meeting - Режим ожидания встречи\n" +
 		"/status - Показать информацию по моему статусу\n" +
 		"/quit - Выйти из режима ожидания встречи\n"
-	_, err := sendMessage(message.Chat.Id, helpMessage)
+	_, err := sendMessage(message.Chat.Id, helpMessage, KeyBoard0())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -334,13 +380,13 @@ func meetHandler(message UpdateResultMessageT) {
 		}
 		if flag != 0 {
 			write(ToGenericArray("Ожидаю встречу"), "БД!F"+strconv.Itoa(flag+1))
-			_, err := sendMessage(message.Chat.Id, "Данные обновлены")
+			_, err := sendMessage(message.Chat.Id, "Данные обновлены", KeyBoard0())
 			if err != nil {
 				log.Println(err.Error())
 			}
 		} else {
 			write(ToGenericArray(message.From.FirstName, message.From.LastName, message.From.Username, message.From.Id, "Ожидаю встречу"), "БД!A"+strconv.Itoa(len(res)+1))
-			_, err := sendMessage(message.Chat.Id, "Данные добавлены")
+			_, err := sendMessage(message.Chat.Id, "Данные добавлены", KeyBoard0())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -349,7 +395,7 @@ func meetHandler(message UpdateResultMessageT) {
 		_, err := sendMessage(message.Chat.Id, "У твоего аккаунта Telegram не задано имя пользователя без него "+
 			"другие пользователи не смогут с тобой связаться. Пожалуйста открой настройки и нажми на свою "+
 			"фотографию, после этого откроется окно в котором можно задать своё имя пользователя. Как сделаешь "+
-			"возвращайся и мы попробуем снова!")
+			"возвращайся и мы попробуем снова!", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -367,12 +413,12 @@ func quitHandler(message UpdateResultMessageT) {
 	}
 	if flag != 0 {
 		write(ToGenericArray("Не хочу встречаться"), "БД!E"+strconv.Itoa(flag+1))
-		_, err := sendMessage(message.Chat.Id, "Данные обновлены")
+		_, err := sendMessage(message.Chat.Id, "Данные обновлены", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
 	} else {
-		_, err := sendMessage(message.Chat.Id, "Не нашел тебя в базе")
+		_, err := sendMessage(message.Chat.Id, "Не нашел тебя в базе", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -389,12 +435,12 @@ func statusHandler(message UpdateResultMessageT) {
 		}
 	}
 	if flag != 0 {
-		_, err := sendMessage(message.Chat.Id, res[flag].([]interface{})[4].(string))
+		_, err := sendMessage(message.Chat.Id, res[flag].([]interface{})[4].(string), KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
 	} else {
-		_, err := sendMessage(message.Chat.Id, "Не нашел тебя в базе")
+		_, err := sendMessage(message.Chat.Id, "Не нашел тебя в базе", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -413,7 +459,7 @@ func defaultMainHandler(message UpdateResultMessageT) {
 				write(ToGenericArray(result[i].([]interface{})[5].(string)+message.Text), "Встречи!F"+strconv.Itoa(i+1))
 				flag = 1
 			}
-			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
+			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback", KeyBoard0())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -425,7 +471,7 @@ func defaultMainHandler(message UpdateResultMessageT) {
 				write(ToGenericArray(result[i].([]interface{})[6].(string)+message.Text), "Встречи!G"+strconv.Itoa(i+1))
 				flag = 1
 			}
-			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback")
+			_, err := sendMessage(message.Chat.Id, "Я записал это как Feedback", KeyBoard0())
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -436,7 +482,7 @@ func defaultMainHandler(message UpdateResultMessageT) {
 		"Возможно я не понял твою команду",
 	}
 	if flag == 0 {
-		_, err := sendMessage(message.Chat.Id, randomMessages[rand.Intn(len(randomMessages))])
+		_, err := sendMessage(message.Chat.Id, randomMessages[rand.Intn(len(randomMessages))], KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -444,6 +490,17 @@ func defaultMainHandler(message UpdateResultMessageT) {
 }
 
 //ВНУТРЕННИЕ ФУНКЦИИ БОТА НЕ ВЫЗЫВАЕМЫЕ НАПРЯМУЮ
+func KeyBoard0() ReplyKeyboardMarkup {
+	button := &KeyboardButton{
+		Text:            "Привет",
+		RequestContact:  false,
+		RequestLocation: false,
+	}
+	key := NewKeyboardButtonRow(*button)
+	keyboard := NewReplyKeyboard(key)
+	return keyboard
+}
+
 func callAt(hour, min, sec int) error {
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
@@ -481,12 +538,12 @@ func giveFeedback() {
 	res := read("Встречи!A1:G10")
 	for i := 1; i < len(res); i++ {
 		chatId, _ := strconv.Atoi(res[i].([]interface{})[1].(string))
-		_, err := sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!")
+		_, err := sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
 		chatId, _ = strconv.Atoi(res[i].([]interface{})[3].(string))
-		_, err = sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!")
+		_, err = sendMessage(chatId, "Привет! Расскажи мне как прошла встреча. Эта информация поможет всем стать лучше!", KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -532,12 +589,12 @@ func generateMeeting() {
 	ram = read("Встречи!A1:D10")
 	for i := 1; i < len(ram); i++ {
 		chatId, _ := strconv.Atoi(ram[i].([]interface{})[1].(string))
-		_, err := sendMessage(chatId, "Привет! На этой неделе твой партнер @"+ram[i].([]interface{})[2].(string))
+		_, err := sendMessage(chatId, "Привет! На этой неделе твой партнер @"+ram[i].([]interface{})[2].(string), KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
 		chatId, _ = strconv.Atoi(ram[i].([]interface{})[3].(string))
-		_, err = sendMessage(chatId, "Привет! на этой неделе твой партнер @"+ram[i].([]interface{})[0].(string))
+		_, err = sendMessage(chatId, "Привет! на этой неделе твой партнер @"+ram[i].([]interface{})[0].(string), KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
