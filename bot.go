@@ -26,7 +26,7 @@ const (
 	baseTelegramUrl       = "https://api.telegram.org"
 	getUpdatesUrl         = "getUpdates"
 	sendMessageUrl        = "sendMessage"
-	telegramToken         = "1333858241:AAEVTFvfWxdC_sn6LUTuT50FePIezn5DCoM"
+	telegramToken         = "1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI"
 	defaultHandlerMessage = "_default"
 )
 
@@ -441,7 +441,7 @@ func statusHandler(message UpdateResultMessageT) {
 		}
 	}
 	if flag != 0 {
-		_, err := sendMessage(message.Chat.Id, res[flag].([]interface{})[4].(string), KeyBoard0())
+		_, err := sendMessage(message.Chat.Id, "Ваш статус: "+res[flag].([]interface{})[4].(string), KeyBoard0())
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -498,12 +498,28 @@ func defaultMainHandler(message UpdateResultMessageT) {
 //ВНУТРЕННИЕ ФУНКЦИИ БОТА НЕ ВЫЗЫВАЕМЫЕ НАПРЯМУЮ
 func KeyBoard0() ReplyKeyboardMarkup {
 	button := &KeyboardButton{
-		Text:            "Привет",
+		Text:            "🧐 Помощь",
 		RequestContact:  false,
 		RequestLocation: false,
 	}
-	key := NewKeyboardButtonRow(*button)
-	keyboard := NewReplyKeyboard(key)
+	button1 := &KeyboardButton{
+		Text:            "👫 Хочу встречу",
+		RequestContact:  false,
+		RequestLocation: false,
+	}
+	button2 := &KeyboardButton{
+		Text:            "👀 Статус",
+		RequestContact:  false,
+		RequestLocation: false,
+	}
+	button3 := &KeyboardButton{
+		Text:            "🙅 Выход",
+		RequestContact:  false,
+		RequestLocation: false,
+	}
+	key := NewKeyboardButtonRow(*button, *button1)
+	key1 := NewKeyboardButtonRow(*button2, *button3)
+	keyboard := NewReplyKeyboard(key, key1)
 	return keyboard
 }
 
@@ -628,6 +644,10 @@ func main() {
 		"/want_a_meeting":     meetHandler,
 		"/quit":               quitHandler,
 		"/status":             statusHandler,
+		"🧐":                   helpHandler,
+		"👀":                   statusHandler,
+		"👫":                   meetHandler,
+		"🙅":                   quitHandler,
 		defaultHandlerMessage: defaultMainHandler,
 	}
 

@@ -1,3 +1,94 @@
 TeleBOT: 2021/05/11 11:53:56 Start work bot
 TeleBOT: 2021/05/11 11:54:30 received 1 messages
 TeleBOT: 2021/05/11 11:54:31 Found in database
+TeleBOT: 2021/05/15 18:31:24 Start work bot
+TeleBOT: 2021/05/15 18:32:08 received 1 messages
+TeleBOT: 2021/05/15 18:33:03 Start work bot
+TeleBOT: 2021/05/15 18:33:39 received 1 messages
+TeleBOT: 2021/05/15 18:33:45 received 1 messages
+TeleBOT: 2021/05/15 18:34:10 received 1 messages
+TeleBOT: 2021/05/15 18:36:31 received 1 messages
+TeleBOT: 2021/05/15 18:36:40 received 1 messages
+TeleBOT: 2021/05/15 18:44:19 received 1 messages
+TeleBOT: 2021/06/30 13:37:08 Start work bot
+TeleBOT: 2021/06/30 13:37:57 received 1 messages
+TeleBOT: 2021/06/30 13:38:00 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%92%D1%81%D1%82%D1%80%D0%B5%D1%87%D0%B8%21A1%3AG10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+TeleBOT: 2021/06/30 13:39:23 Start work bot
+TeleBOT: 2021/06/30 13:39:28 received 1 messages
+TeleBOT: 2021/06/30 13:39:29 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%92%D1%81%D1%82%D1%80%D0%B5%D1%87%D0%B8%21A1%3AG10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+TeleBOT: 2021/06/30 13:40:45 Start work bot
+TeleBOT: 2021/06/30 13:40:48 received 1 messages
+TeleBOT: 2021/06/30 13:40:48 Unable to read client secret file: open credentials.json: no such file or directory
+TeleBOT: 2021/06/30 13:41:18 Start work bot
+TeleBOT: 2021/06/30 13:41:23 received 1 messages
+TeleBOT: 2021/06/30 13:42:28 received 1 messages
+TeleBOT: 2021/06/30 13:42:36 received 1 messages
+TeleBOT: 2021/06/30 13:59:51 Start work bot
+TeleBOT: 2021/06/30 14:00:21 received 1 messages
+TeleBOT: 2021/06/30 14:00:28 received 1 messages
+TeleBOT: 2021/06/30 14:00:34 received 1 messages
+TeleBOT: 2021/06/30 14:03:08 Start work bot
+TeleBOT: 2021/06/30 14:03:12 received 1 messages
+TeleBOT: 2021/06/30 14:03:59 received 1 messages
+TeleBOT: 2021/06/30 14:04:10 received 1 messages
+TeleBOT: 2021/06/30 14:04:13 received 1 messages
+TeleBOT: 2021/06/30 14:05:19 Start work bot
+TeleBOT: 2021/06/30 14:05:26 received 1 messages
+TeleBOT: 2021/06/30 14:05:27 Found in database
+TeleBOT: 2021/06/30 14:06:44 Start work bot
+TeleBOT: 2021/06/30 14:06:51 received 1 messages
+TeleBOT: 2021/06/30 14:06:53 Found in database
+TeleBOT: 2021/06/30 14:07:04 received 1 messages
+TeleBOT: 2021/06/30 14:07:34 received 1 messages
+TeleBOT: 2021/06/30 14:07:38 Found in database
+TeleBOT: 2021/06/30 14:08:19 Start work bot
+TeleBOT: 2021/06/30 14:08:23 received 1 messages
+TeleBOT: 2021/06/30 14:08:24 Found in database
+TeleBOT: 2021/06/30 15:01:33 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 15:01:33 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 15:22:32 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: i/o timeout
+TeleBOT: 2021/06/30 15:22:32 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:54:52 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:54:52 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:54:55 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:54:55 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:54:58 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:54:58 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:55:01 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:55:01 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:55:04 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:55:04 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 16:55:07 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": dial tcp: lookup api.telegram.org: no such host
+TeleBOT: 2021/06/30 16:55:07 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 17:24:02 Post "https://api.telegram.org/bot1565772755:AAFn-yqTceIZOfi5feF5kD5KNfnQxkCxNoI/getUpdates?offset=760905791": read tcp 10.10.4.46:60227->149.154.167.220:443: read: connection reset by peer
+TeleBOT: 2021/06/30 17:24:02 error while receiving updates: unexpected end of JSON input
+TeleBOT: 2021/06/30 18:17:24 Start work bot
+TeleBOT: 2021/06/30 18:17:40 received 1 messages
+TeleBOT: 2021/06/30 18:18:22 Start work bot
+TeleBOT: 2021/06/30 18:18:29 received 1 messages
+TeleBOT: 2021/06/30 18:22:18 Start work bot
+TeleBOT: 2021/06/30 18:22:22 received 1 messages
+TeleBOT: 2021/06/30 18:24:50 Start work bot
+TeleBOT: 2021/06/30 18:24:53 received 1 messages
+TeleBOT: 2021/06/30 18:26:15 Start work bot
+TeleBOT: 2021/06/30 18:26:19 received 1 messages
+TeleBOT: 2021/06/30 18:26:26 received 1 messages
+TeleBOT: 2021/06/30 18:27:19 Start work bot
+TeleBOT: 2021/06/30 18:27:24 received 1 messages
+TeleBOT: 2021/06/30 18:27:30 received 1 messages
+TeleBOT: 2021/06/30 18:28:46 Start work bot
+TeleBOT: 2021/06/30 18:29:16 received 1 messages
+TeleBOT: 2021/06/30 18:29:21 Found in database
+TeleBOT: 2021/06/30 18:29:27 received 1 messages
+TeleBOT: 2021/06/30 18:29:28 Found in database
+TeleBOT: 2021/06/30 18:29:31 received 1 messages
+TeleBOT: 2021/06/30 18:29:32 Found in database
+TeleBOT: 2021/06/30 18:29:37 received 1 messages
