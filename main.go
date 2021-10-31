@@ -654,7 +654,7 @@ func main() {
 	//Необходим для получения обновлений.
 	offset := 0
 	//Вызов функции создания встреч
-	err := callAt(21, 56, 0)
+	err := callAt(20, 49, 0)
 	if err != nil {
 		log.Println("error in calling function" + err.Error())
 	}

@@ -92,3 +92,64 @@ TeleBOT: 2021/06/30 18:29:28 Found in database
 TeleBOT: 2021/06/30 18:29:31 received 1 messages
 TeleBOT: 2021/06/30 18:29:32 Found in database
 TeleBOT: 2021/06/30 18:29:37 received 1 messages
+TeleBOT: 2021/10/14 20:39:51 Start work bot
+TeleBOT: 2021/10/14 20:59:43 received 1 messages
+TeleBOT: 2021/10/14 21:59:12 Start work bot
+TeleBOT: 2021/10/16 20:29:31 Start work bot
+TeleBOT: 2021/10/16 20:30:02 received 1 messages
+TeleBOT: 2021/10/16 20:30:14 received 1 messages
+TeleBOT: 2021/10/16 20:30:15 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%92%D1%81%D1%82%D1%80%D0%B5%D1%87%D0%B8%21A1%3AG10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+TeleBOT: 2021/10/16 20:31:12 Start work bot
+TeleBOT: 2021/10/16 20:31:16 received 8 messages
+TeleBOT: 2021/10/16 20:31:16 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%92%D1%81%D1%82%D1%80%D0%B5%D1%87%D0%B8%21A1%3AG10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+TeleBOT: 2021/10/16 20:31:58 Start work bot
+TeleBOT: 2021/10/16 20:32:01 received 8 messages
+TeleBOT: 2021/10/16 20:32:01 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%92%D1%81%D1%82%D1%80%D0%B5%D1%87%D0%B8%21A1%3AG10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+TeleBOT: 2021/10/16 20:32:41 Start work bot
+TeleBOT: 2021/10/16 20:32:44 received 8 messages
+TeleBOT: 2021/10/16 20:33:40 received 1 messages
+TeleBOT: 2021/10/16 20:34:00 received 1 messages
+TeleBOT: 2021/10/16 20:34:15 received 1 messages
+TeleBOT: 2021/10/16 20:34:16 Found in database
+TeleBOT: 2021/10/16 20:34:31 received 1 messages
+TeleBOT: 2021/10/16 20:34:32 Found in database
+TeleBOT: 2021/10/16 20:34:36 received 1 messages
+TeleBOT: 2021/10/16 20:34:36 Found in database
+TeleBOT: 2021/10/16 20:37:46 received 1 messages
+TeleBOT: 2021/10/16 20:37:46 Found in database
+TeleBOT: 2021/10/16 20:37:53 received 1 messages
+TeleBOT: 2021/10/16 20:37:54 Found in database
+TeleBOT: 2021/10/16 20:38:00 received 1 messages
+TeleBOT: 2021/10/16 20:38:00 Found in database
+TeleBOT: 2021/10/16 20:38:19 Start work bot
+TeleBOT: 2021/10/16 20:38:25 received 1 messages
+TeleBOT: 2021/10/16 20:38:26 Found in database
+TeleBOT: 2021/10/16 20:38:29 received 1 messages
+TeleBOT: 2021/10/16 20:38:30 Found in database
+TeleBOT: 2021/10/16 20:40:02 Delete person
+TeleBOT: 2021/10/16 20:40:02 Delete person
+TeleBOT: 2021/10/16 20:41:52 Start work bot
+TeleBOT: 2021/10/16 20:41:56 received 1 messages
+TeleBOT: 2021/10/16 20:41:56 Found in database
+TeleBOT: 2021/10/16 20:42:27 received 1 messages
+TeleBOT: 2021/10/16 20:42:28 Found in database
+TeleBOT: 2021/10/16 20:45:32 received 1 messages
+TeleBOT: 2021/10/16 20:45:38 received 1 messages
+TeleBOT: 2021/10/16 20:47:23 received 1 messages
+TeleBOT: 2021/10/16 20:47:51 received 1 messages
+TeleBOT: 2021/10/16 20:48:42 Start work bot
+TeleBOT: 2021/10/16 20:49:53 received 1 messages
+TeleBOT: 2021/10/16 20:50:12 received 1 messages
+TeleBOT: 2021/10/16 20:50:32 received 1 messages
