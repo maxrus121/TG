@@ -167,3 +167,8 @@ TeleBOT: 2021/10/31 14:11:11 received 1 messages
 TeleBOT: 2021/10/31 14:11:34 Found in database
 TeleBOT: 2021/10/31 14:12:07 received 1 messages
 TeleBOT: 2021/10/31 14:12:08 Found in database
+TeleBOT: 2021/10/31 14:21:23 Start work bot
+TeleBOT: 2021/10/31 14:21:38 received 1 messages
+TeleBOT: 2021/10/31 14:21:39 Found in database
+TeleBOT: 2021/10/31 14:21:45 received 1 messages
+TeleBOT: 2021/10/31 14:21:46 Found in database

@@ -385,7 +385,7 @@ func meetHandler(message UpdateResultMessageT) {
 			}
 		}
 		if flag != 0 {
-			write(ToGenericArray("Ожидаю встречу"), "БД!F"+strconv.Itoa(flag+1))
+			write(ToGenericArray("Ожидаю встречу"), "БД!E"+strconv.Itoa(flag+1))
 			_, err := sendMessage(message.Chat.Id, "Данные обновлены", KeyBoard0())
 			if err != nil {
 				log.Println(err.Error())
