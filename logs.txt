@@ -153,3 +153,17 @@ TeleBOT: 2021/10/16 20:48:42 Start work bot
 TeleBOT: 2021/10/16 20:49:53 received 1 messages
 TeleBOT: 2021/10/16 20:50:12 received 1 messages
 TeleBOT: 2021/10/16 20:50:32 received 1 messages
+TeleBOT: 2021/10/31 13:37:26 Start work bot
+TeleBOT: 2021/10/31 13:38:00 received 1 messages
+TeleBOT: 2021/10/31 14:10:16 Start work bot
+TeleBOT: 2021/10/31 14:10:19 received 1 messages
+TeleBOT: 2021/10/31 14:10:20 Unable to retrieve data from sheet: Get "https://sheets.googleapis.com/v4/spreadsheets/1uz21FOMfX7GxhKRJSj-E1UBnwd-IF6qjbJgDuiHUrwI/values/%D0%91%D0%94%21A1%3AE10?alt=json&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
+Response: {
+  "error": "invalid_grant",
+  "error_description": "Token has been expired or revoked."
+}
+TeleBOT: 2021/10/31 14:11:08 Start work bot
+TeleBOT: 2021/10/31 14:11:11 received 1 messages
+TeleBOT: 2021/10/31 14:11:34 Found in database
+TeleBOT: 2021/10/31 14:12:07 received 1 messages
+TeleBOT: 2021/10/31 14:12:08 Found in database
